@@ -32,7 +32,7 @@ const db = await mysql.createConnection(
 
 // view departments query
 const viewDepartments = function () {
-  db.query(`SELECT id, movie_name AS title FROM movies`, (err, rows) => {
+  db.query(`SELECT id, name FROM departments`, (err, rows) => {
     if (err) {
       res.status(500).json({ error: err.message });
       return;
@@ -43,7 +43,7 @@ const viewDepartments = function () {
 
 // view roles query
 const viewRoles = function () {
-  db.query(`SELECT id, movie_name AS title FROM movies`, (err, rows) => {
+  db.query(`SELECT job title, id, department, salary FROM roles`, (err, rows) => {
     if (err) {
       res.status(500).json({ error: err.message });
       return;
@@ -54,7 +54,7 @@ const viewRoles = function () {
 
 // view employees query
 const viewEmployees = function () {
-  db.query(`SELECT id, movie_name AS title FROM movies`, (err, rows) => {
+  db.query(`CREATE TABLE viewEmployees id, first_name, last_name, role_id.title, role_id.department_id, role_id.salary, manager_id FROM employees`, (err, rows) => {
     if (err) {
       res.status(500).json({ error: err.message });
       return;
@@ -104,6 +104,11 @@ const addEmployee = function () {
     return body;
   });
 }
+
+//update employee role
+//select an employee to update role
+//update the role
+//add to database
 
 // Listening
 app.listen(PORT, () => {
