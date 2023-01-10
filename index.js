@@ -1,6 +1,6 @@
-// const cTable = require('console.table');
+const cTable = require('console.table');
 const inquirer = require('inquirer');
-// const mysql = require('mysql2/promise');
+const mysql = require('mysql2/promise');
 
 const PORT = process.env.PORT || 3001;
 
@@ -54,7 +54,7 @@ const viewRoles = function () {
 
 // view employees query
 const viewEmployees = function () {
-  db.query(`CREATE TABLE viewEmployees id, first_name, last_name, role_id.title, role_id.department_id, role_id.salary, manager_id FROM employees`, (err, rows) => {
+  db.query(`CREATE TABLE viewEmployees (id, first_name, last_name, role_id.title, role_id.department_id, role_id.salary, manager_id)`, (err, rows) => {
     if (err) {
       res.status(500).json({ error: err.message });
       return;
@@ -106,9 +106,16 @@ const addEmployee = function () {
 }
 
 //update employee role
-//select an employee to update role
-//update the role
-//add to database
+const updateEmployeeRole = function () {
+  db.query(`UPDATE employees SET role WHERE (role_id)
+  VALUES (?)`, (err, result) => {
+    if (err) {
+      res.status(400).json({ error: errormessage });
+      return;
+    }
+    return rows
+  })
+}
 
 // Listening
 app.listen(PORT, () => {
