@@ -1,34 +1,30 @@
--- create the database for the project
 DROP DATABASE IF EXISTS employeetracker_db;
 CREATE DATABASE employeetracker_db;
 
 USE employeetracker_db;
 
---create the department table based on the asset/png file
 CREATE TABLE departments (
-    id INT,
+    id INT NOT NULL AUTO_INCREMENT,
     name VARCHAR(30),
     PRIMARY KEY (id)
 );
 
---create the role table based from on asset/png file
 CREATE TABLE roles (
-    id INT,
+    id INT NOT NULL AUTO_INCREMENT,
     title VARCHAR(30),
     salary DECIMAL,
     department_id INT,
     PRIMARY KEY (id),
-    FOREIGN KEY (deparmtent_id) REFERENCES department(id)
+    FOREIGN KEY (department_id) REFERENCES departments (id)
 );
 
---create the employee table based on the asset/png file
 CREATE TABLE employees (
-    id INT,
+    id INT NOT NULL AUTO_INCREMENT,
     first_name VARCHAR(30),
     last_name VARCHAR(30),
     role_id INT,
     manager_id INT,
-    FOREIGN KEY (role_id) REFERENCES role (id),
+    FOREIGN KEY (role_id) REFERENCES roles (id),
     PRIMARY KEY (id),
-    FOREIGN KEY (manager_id) REFERENCES employee (id)
+    FOREIGN KEY (manager_id) REFERENCES employees (id)
 );
