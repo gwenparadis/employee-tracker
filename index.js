@@ -68,14 +68,14 @@ const init = async () => {
   menu();
 };
 
-// view departments query
+// view departments
 const viewDepartments = async () => {
   const [rows, fields] = await db.execute("SELECT * FROM departments");
   console.table(rows);
   menu();
 };
 
-// view roles query
+// view roles
 const viewRoles = async () => {
   const [rows, fields] = await db.execute(
     "SELECT r.title, r.id, d.department, r.salary from roles r JOIN departments d ON r.department_id = d.id"
@@ -84,7 +84,7 @@ const viewRoles = async () => {
   return menu();
 };
 
-// view employees query
+// view employees
 const viewEmployees = async () => {
   const [rows, fields] = await db.execute(
     "SELECT e.first_name, e.last_name, r.title, d.department, r.salary, e.manager_id from employees e JOIN roles r on e.role_id = r.id JOIN departments d on r.department_id = d.id"
@@ -93,7 +93,7 @@ const viewEmployees = async () => {
   return menu();
 };
 
-// add department query
+// add department
 const addDepartment = async function () {
   let answers = await inquirer.prompt([
     {
@@ -110,7 +110,7 @@ const addDepartment = async function () {
   return viewDepartments();
 };
 
-// add role query
+// add role
 const addRole = async function () {
   let answers = await inquirer.prompt([
     {
@@ -136,32 +136,40 @@ const addRole = async function () {
   return viewRoles();
 };
 
-// add employee query
-const addEmployee = function () {
-  const params = [
-    body.first_name,
-    body.last_name,
-    body.role_id,
-    body.manager_id,
-  ];
-
-  db.query(
-    `INSERT INTO employees (first_name, last_name, role_id, manager_id)
-  VALUES (?)`,
-    params,
-    (err, result) => {
-      if (err) {
-        res.status(400).json({ error: err.message });
-        return;
-      }
-      return body;
-    }
+// add employee
+const addEmployee = async function () {
+  let answers = await inquirer.prompt([
+    {
+      type: "input",
+      message: "What is the employee's first name?",
+      name: "firstName",
+    },
+    {
+      type: "input",
+      message: "What is the employee's last name?",
+      name: "lastName",
+    },
+    {
+      type: "input",
+      message: "What is the role id for this employee?",
+      name: "role",
+    },
+    {
+      type: "input",
+      message: "What is the manager id for this employee?",
+      name: "manager",
+    },
+  ]);
+  console.log(answers);
+  const [rows, fields] = await db.execute(
+    `INSERT INTO employees (first_name, last_name, role_id, manager_id) VALUES ("${answers.firstName}", "${answers.lastName}", "${answers.role}", "${answers.manager}")`
   );
+  return viewEmployees();
 };
 
 //update employee role
 const updateEmployeeRole = function () {
-  db.query(
+  db(
     `UPDATE employees SET role WHERE (role_id)
   VALUES (?)`,
     (err, result) => {
