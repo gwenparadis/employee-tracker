@@ -167,19 +167,16 @@ const addEmployee = async function () {
   return viewEmployees();
 };
 
-//update employee role
-const updateEmployeeRole = function () {
-  db(
-    `UPDATE employees SET role WHERE (role_id)
-  VALUES (?)`,
-    (err, result) => {
-      if (err) {
-        res.status(400).json({ error: errormessage });
-        return;
-      }
-      return rows;
-    }
-  );
-};
+// //update employee role
+// const updateEmployeeRole = async function () {
+//   let answers = await inquirer.prompt([
+//     {
+//       type: "list",
+//       name: "employees",
+//       message: "Which employee would you like to update?",
+//       choices: [`${employee.firstName} ${employee.lastName}`],
+//     },
+//   ]);
+// };
 
 init();
