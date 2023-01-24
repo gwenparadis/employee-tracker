@@ -95,7 +95,7 @@ const viewEmployees = async () => {
 
 // add department
 const addDepartment = async function () {
-  let answers = await inquirer.prompt([
+  const answers = await inquirer.prompt([
     {
       type: "input",
       message: "What is the department name?",
@@ -112,7 +112,7 @@ const addDepartment = async function () {
 
 // add role
 const addRole = async function () {
-  let answers = await inquirer.prompt([
+  const answers = await inquirer.prompt([
     {
       type: "input",
       message: "What is the role name?",
@@ -138,7 +138,7 @@ const addRole = async function () {
 
 // add employee
 const addEmployee = async function () {
-  let answers = await inquirer.prompt([
+  const answers = await inquirer.prompt([
     {
       type: "input",
       message: "What is the employee's first name?",
@@ -167,16 +167,25 @@ const addEmployee = async function () {
   return viewEmployees();
 };
 
-// //update employee role
-// const updateEmployeeRole = async function () {
-//   let answers = await inquirer.prompt([
-//     {
-//       type: "list",
-//       name: "employees",
-//       message: "Which employee would you like to update?",
-//       choices: [`${employee.firstName} ${employee.lastName}`],
-//     },
-//   ]);
-// };
+//update employee role
+const updateEmployeeRole = async function () {
+  const [rows, fields] = await db.execute(
+    "SELECT id, first_name, last_name FROM employees"
+  );
+
+  const formattedEmployees = rows.map((employee) => {
+    return `${employee.id}: ${employee.first_name} ${employee.last_name}`;
+  });
+
+  const answers = await inquirer.prompt([
+    {
+      type: "list",
+      name: "employees",
+      message: "Which employee would you like to update?",
+      choices: formattedEmployees,
+    },
+  ]);
+  const id = answers.employees.split(":")[0];
+};
 
 init();
