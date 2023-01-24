@@ -1,90 +1,87 @@
 const inquirer = require("inquirer");
 const mysql = require("mysql2/promise");
+const bluebird = require("bluebird");
+var db;
+const menu = () => {
+  inquirer
+    .prompt([
+      {
+        type: "list",
+        name: "introMessage",
+        message: "What would you like to do?",
+        choices: [
+          "View all Departments",
+          "View all Roles",
+          "View all Employees",
+          "Add a Department",
+          "Add a role",
+          "Add an employee",
+          "Update an Employee Role",
+        ],
+      },
+    ])
+    .then(async (answers) => {
+      // Connect to database
+      switch (answers.introMessage) {
+        case "View all Departments":
+          viewDepartments();
+          break;
+        case "View all Roles":
+          viewRoles();
+          break;
+        case "View all Employees":
+          viewEmployees();
+          break;
+        case "Add a Department":
+          addDepartment();
+          break;
+        case "Add a role":
+          addRole();
+          break;
+        case "Add an employee":
+          addEmployee();
+          break;
+        case "Update an Employee Role":
+          updateEmployeeRole();
+          break;
 
-// Connect to database
-const db = mysql.createConnection(
-  {
-    host: "localhost",
-    // MySQL username,
-    user: "root",
-    // MySQL password
-    password: "",
-    database: "employeetracker_db",
-  },
-  console.log(`Connected to the employeetracker_db database.`)
-);
+        default:
+          break;
+      }
+    });
+};
 
-inquirer
-  .prompt([
+const init = async () => {
+  db = await mysql.createConnection(
     {
-      type: "list",
-      name: "introMessage",
-      message: "What would you like to do?",
-      choices: [
-        "View all Departments",
-        "View all Roles",
-        "View all Employees",
-        "Add a Department",
-        "Add a role",
-        "Add an employee",
-        "Update an Employee Role",
-      ],
+      host: "localhost",
+      // MySQL username,
+      user: "root",
+      // MySQL password
+      password: "",
+      database: "employeetracker_db",
+      Promise: bluebird,
     },
-  ])
-  .then((answers) => {
-    switch (answers.introMessage) {
-      case "View all Departments":
-        viewDepartments();
-        break;
-      case "View all Roles":
-        viewRoles();
-        break;
-      case "View all Employees":
-        viewEmployees();
-        break;
-      case "Add a Department":
-        addDepartment();
-        break;
-      case "Add a role":
-        addRole();
-        break;
-      case "Add an employee":
-        addEmployee();
-        break;
-      case "Update an Employee Role":
-        updateEmployeeRole();
-        break;
-
-      default:
-        break;
-    }
-  });
+    console.log(`Connected to the employeetracker_db database.`)
+  );
+  menu();
+};
 
 //insert the following functions into the if/then??
-
 // view departments query
-const viewDepartments = function () {
-  db.query(`SELECT id, name FROM departments`, (err, rows) => {
-    if (err) {
-      res.status(500).json({ error: err.message });
-      return;
-    }
-    return rows;
-  });
+const viewDepartments = async () => {
+  const [rows, fields] = await db.execute("SELECT * FROM departments");
+  console.table(rows);
+  menu();
 };
 
 // view roles query
-const viewRoles = function () {
-  db.query(
-    `SELECT job title, id, department, salary FROM roles`,
-    (err, rows) => {
-      if (err) {
-        res.status(500).json({ error: err.message });
-        return;
-      }
-      return rows;
-    }
+const viewRoles = async () => {
+  const [rows, fields] = await db.execute(
+    "SELECT r.title, r.salary, d.name from roles r JOIN departments d ON r.department_id = d.id"
   );
+  console.table(rows);
+  return menu();
 };
 
 // view employees query
@@ -102,21 +99,20 @@ const viewEmployees = function () {
 };
 
 // add department query
-const addDepartment = function () {
-  const params = [body.name];
-
-  db.query(
-    `INSERT INTO departments (name)
-      VALUES (?)`,
-    params,
-    (err, result) => {
-      if (err) {
-        res.status(400).json({ error: err.message });
-        return;
-      }
-      return body;
-    }
+const addDepartment = async function () {
+  var answers = await inquirer.prompt([
+    {
+      type: "input",
+      message: "Wha'ts the department name",
+      name: "dept_name",
+    },
+  ]);
+  console.log(answers);
+  const [rows, fields] = await db.execute(
+    `INSERT INTO departments (name) VALUES ("${answers.dept_name}")`
   );
+
+  return viewDepartments();
 };
 
 // add role query
@@ -174,3 +170,5 @@ const updateEmployeeRole = function () {
     }
   );
 };
+
+init();
