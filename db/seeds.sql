@@ -1,6 +1,6 @@
 USE employeetracker_db;
 
-INSERT INTO departments (name)
+INSERT INTO departments (department)
 VALUES
 ("Community"),
 ("Leadership");

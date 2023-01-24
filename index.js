@@ -1,7 +1,8 @@
 const inquirer = require("inquirer");
 const mysql = require("mysql2/promise");
 const bluebird = require("bluebird");
-var db;
+let db;
+
 const menu = () => {
   inquirer
     .prompt([
@@ -67,7 +68,6 @@ const init = async () => {
   menu();
 };
 
-//insert the following functions into the if/then??
 // view departments query
 const viewDepartments = async () => {
   const [rows, fields] = await db.execute("SELECT * FROM departments");
@@ -78,59 +78,62 @@ const viewDepartments = async () => {
 // view roles query
 const viewRoles = async () => {
   const [rows, fields] = await db.execute(
-    "SELECT r.title, r.salary, d.name from roles r JOIN departments d ON r.department_id = d.id"
+    "SELECT r.title, r.id, d.department, r.salary from roles r JOIN departments d ON r.department_id = d.id"
   );
   console.table(rows);
   return menu();
 };
 
 // view employees query
-const viewEmployees = function () {
-  db.query(
-    `CREATE TABLE viewEmployees (id, first_name, last_name, title, department_id, salary, manager_id)`,
-    (err, rows) => {
-      if (err) {
-        res.status(500).json({ error: err.message });
-        return;
-      }
-      return rows;
-    }
+const viewEmployees = async () => {
+  const [rows, fields] = await db.execute(
+    "SELECT e.first_name, e.last_name, r.title, d.department, r.salary, e.manager_id from employees e JOIN roles r on e.role_id = r.id JOIN departments d on r.department_id = d.id"
   );
+  console.table(rows);
+  return menu();
 };
 
 // add department query
 const addDepartment = async function () {
-  var answers = await inquirer.prompt([
+  let answers = await inquirer.prompt([
     {
       type: "input",
-      message: "Wha'ts the department name",
-      name: "dept_name",
+      message: "What is the department name?",
+      name: "department",
     },
   ]);
   console.log(answers);
   const [rows, fields] = await db.execute(
-    `INSERT INTO departments (name) VALUES ("${answers.dept_name}")`
+    `INSERT INTO departments (department) VALUES ("${answers.department}")`
   );
 
   return viewDepartments();
 };
 
 // add role query
-const addRole = function () {
-  const params = [body.title, body.salary, body.department_id];
-
-  db.query(
-    `INSERT INTO roles (title, salary, department_id)
-  VALUES (?)`,
-    params,
-    (err, result) => {
-      if (err) {
-        res.status(400).json({ error: err.message });
-        return;
-      }
-      return body;
-    }
+const addRole = async function () {
+  let answers = await inquirer.prompt([
+    {
+      type: "input",
+      message: "What is the role name?",
+      name: "role",
+    },
+    {
+      type: "input",
+      message: "What is the salary for this role?",
+      name: "salary",
+    },
+    {
+      type: "input",
+      message: "What is the department id for this role?",
+      name: "department",
+    },
+  ]);
+  console.log(answers);
+  const [rows, fields] = await db.execute(
+    `INSERT INTO roles (title, salary, department_id) VALUES ("${answers.role}", "${answers.salary}", "${answers.department}")`
   );
+  return viewRoles();
 };
 
 // add employee query
