@@ -169,7 +169,7 @@ const addEmployee = async function () {
 
 //update employee role
 const updateEmployeeRole = async function () {
-  const [rows, fields] = await db.execute(
+  var [rows, fields] = await db.execute(
     "SELECT id, first_name, last_name FROM employees"
   );
 
@@ -185,7 +185,26 @@ const updateEmployeeRole = async function () {
       choices: formattedEmployees,
     },
   ]);
-  const id = answers.employees.split(":")[0];
+  const employeeId = answers.employees.split(":")[0];
+  var [rows, fields] = await db.execute("SELECT id, title, salary FROM roles");
+  const formattedRoles = rows.map((role) => {
+    return `${role.id}: ${role.title} $${role.salary}`;
+  });
+  console.log(formattedRoles);
+  const response = await inquirer.prompt([
+    {
+      type: "list",
+      name: "role",
+      message: "What will be the employee's new role?",
+      choices: formattedRoles,
+    },
+  ]);
+  const roleId = response.role.split(":")[0];
+  var [rows, fields] = await db.execute(`UPDATE employees
+  SET role_id = ${roleId}
+  WHERE employees.id = ${employeeId};`);
+
+  viewEmployees();
 };
 
 init();
