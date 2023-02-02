@@ -28,5 +28,3 @@ CREATE TABLE employees (
     PRIMARY KEY (id),
     FOREIGN KEY (manager_id) REFERENCES employees (id)
 );
-
-(id, first_name, last_name, title, department_id, salary, manager_id)
