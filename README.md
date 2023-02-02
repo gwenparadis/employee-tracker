@@ -1,4 +1,4 @@
-#Employee Tracker (Week 12)
+# Employee Tracker
 
 ## Description
 
